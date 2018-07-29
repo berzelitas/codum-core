@@ -90,6 +90,11 @@ void token::transfer(account_name from,
         {
             accounts from_acnts(_self, from);
             const auto &sender = from_acnts.get(quantity.symbol.name(), "no balance object found");
+            print("quantity to be sent: ", quantity.amount, "\n");
+            print("sender balance: ", sender.balance.amount, "\n");
+            print("locked balance: ", itr->locked_balance, "\n");
+            print("locked until: ", itr->locked_until, "\n");
+            print("time now: ", current_time, "\n");
             eosio_assert(quantity.amount <= (int64_t)((sender.balance.amount - itr->locked_balance)), "locked tokens cannot be transferred");
         }
     }
@@ -113,8 +118,8 @@ void token::setgrunlock(uint64_t date, uint8_t percent) // WIP
 void token::launchlock(account_name to, asset quantity)
 {
     token::check_distributor_and_asset(quantity);
-    /*time launch_date = stactic_cast<uint64_t>(1567987200)//==> epoch time in seconds corressponding to  Monday, 9 September 2019 00:00:00 GMT*/
-    time launch_date = 1000; // launch date for testing.
+    time launch_date = 1567987200; //==> epoch time in seconds corressponding to Monday, 9 September 2019 00:00:00 GMT
+    // time launch_date = 1000; // launch date for testing.
     token::launch_lock(to, quantity, launch_date);
 }
 
@@ -130,7 +135,6 @@ void token::distribsale(account_name from, account_name to, asset quantity, stri
 
     SEND_INLINE_ACTION(*this, launchlock, {from, N(active)}, {to, quantity});
     SEND_INLINE_ACTION(*this, transfer, {from, N(active)}, {from, to, quantity, memo});
-    // transfer(from, to, quantity, memo); // needs to be inlined
 }
 
 void token::setdistrib(asset currency, account_name distributor)
@@ -154,7 +158,6 @@ void token::distribcontr(account_name from, account_name to, asset quantity, str
 
     SEND_INLINE_ACTION(*this, gradlock, {from, N(active)}, {to, quantity});
     SEND_INLINE_ACTION(*this, transfer, {from, N(active)}, {from, to, quantity, memo});
-    // transfer(from, to, quantity, memo); // needs to be inlined.
 }
 
 void token::updaterate(uint8_t network, uint32_t rate) {
