@@ -94,7 +94,7 @@ void codumpresale::approve(const account_name contributor)
   auto itr = whitelist_table.find(contributor);
 
   eosio_assert(itr != whitelist_table.end(), "there is no such contributor in whitelist");
-  eosio_assert(itr->acceptedterms, "contributor have not accepted terms");
+  eosio_assert(itr->acceptedterms, "contributor has not accepted terms");
 
   whitelist_table.modify(itr, _self, [&](auto &wt) {
     wt.approved = now();
@@ -109,7 +109,7 @@ void codumpresale::buycodum(const account_name contributor,
   require_auth(contributor);
   eosio_assert(get_sale_state(hardcap) > 1, "hard cap reached");
   eosio_assert(is_contributor_approved(contributor), "please wait while we approve your participation");
-  eosio_assert(end > now(), "presale is ended");
+  eosio_assert(end > now(), "fundraising round A has ended");
 
   contributions contribution_table(_self, _self);
 
@@ -157,16 +157,22 @@ void codumpresale::validate(const uint64_t id, const string &memo, const string 
   auto itr = contribution_table.find(id);
   eosio_assert(itr != contribution_table.end(), "there is no contribution with this id");
 
-  contribution_table.modify(itr, _self, [&](auto &vt) {
-    eosio_assert(is_contributor_approved(vt.contributor), "please wait while we approve your participation");
-    eosio_assert(memo == vt.memo, "transaction memo mismatch");
-    eosio_assert(start < vt.datetime && end > vt.datetime, "date of the transaction outside sale date and time bounds");
+  contribution_table.modify(itr, _self, [&](auto &ct) {
+    eosio_assert(is_contributor_approved(ct.contributor), "please wait while we approve your participation");
+    eosio_assert(memo == ct.memo, "transaction memo mismatch");
+    eosio_assert(start < ct.datetime && end > ct.datetime, "date of the transaction outside sale date and time bounds");
 
-    vt.validated = now();
-    vt.transaction = transaction;
-    vt.codum_bonus.amount = 0;
+    token::exrates exrate_table(tokencontract, tokencontract);
+    auto rt = exrate_table.find(ct.network);
+    eosio_assert(rt != exrate_table.end(), "no such network in codum.token exrates table");
 
-    auto dist = vt.codum_dist.amount;
+    ct.rate = rt->rate;
+    ct.codum_dist = asset(ct.quantity.amount * ct.rate / 10000, S(4, CODUM));
+    ct.validated = now();
+    ct.transaction = transaction;
+    ct.codum_bonus.amount = 0;
+
+    auto dist = ct.codum_dist.amount;
     int64_t last_bonus = 0;
     const uint8_t stages_count = 2;
 
@@ -175,12 +181,12 @@ void codumpresale::validate(const uint64_t id, const string &memo, const string 
       auto left = get_bonus_state(stage) - last_bonus;
       if (dist <= left)
       {
-        vt.codum_bonus.amount += dist * bonus[stage] / 100;
+        ct.codum_bonus.amount += dist * bonus[stage] / 100;
         break;
       }
       else if (left > 0)
       {
-        vt.codum_bonus.amount += left * bonus[stage] / 100;
+        ct.codum_bonus.amount += left * bonus[stage] / 100;
         dist -= left;
         last_bonus += left;
       }
