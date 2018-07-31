@@ -256,38 +256,33 @@ void token::gradual_lock(account_name to, asset quantity)
     gradunlocks gradual_unlock_table(_self, _self);
     transferlocks transfer_lock_table(_self, _self);
     auto accidx = transfer_lock_table.get_index<N(acc)>();
+    auto itr = accidx.lower_bound(to);
     int count = 0;
 
     for (auto &otr : gradual_unlock_table)
     {
-        auto locked_until_date = otr.locked_until;
-        auto threshold = otr.lock_threshold; // threshold value
-        auto itr = accidx.lower_bound(to);
-
+        itr = accidx.lower_bound(to);
+        count = 0;
         for (; itr != accidx.end() && itr->account == to; ++itr) // visiting all accounts = to
         {
+            // lock date check
+            if (itr->locked_until == otr.locked_until)
             {
-                // lock date check
-                if (itr->locked_until == locked_until_date)
-                {
-                    accidx.modify(itr, _self, [&](auto &tfl) {
-                        tfl.locked_balance += (static_cast<uint64_t>(quantity.amount) * static_cast<uint64_t>(threshold) / static_cast<uint64_t>(100));
-                    });
-                    count++;
-                    break;
-                }
+                accidx.modify(itr, _self, [&](auto &tfl) {
+                    tfl.locked_balance += (static_cast<uint64_t>(quantity.amount) * static_cast<uint64_t>(otr.lock_threshold) / static_cast<uint64_t>(100));
+                });
+                count++;
+                // break;
             }
         }
-        if (!count)
+        if (count == 0)
         {
             // create such entry in transferlocks
-            auto prim_key = transfer_lock_table.available_primary_key();
             transfer_lock_table.emplace(_self, [&](auto &tfl) {
-                // address.key = addresses.available_primary_key();
-                tfl.id = prim_key;
+                tfl.id = transfer_lock_table.available_primary_key();
                 tfl.account = to;
-                tfl.locked_balance = static_cast<uint64_t>(quantity.amount);
-                tfl.locked_until = locked_until_date;
+                tfl.locked_balance = (static_cast<uint64_t>(quantity.amount) * static_cast<uint64_t>(otr.lock_threshold) / static_cast<uint64_t>(100));
+                tfl.locked_until = otr.locked_until;
             });
         }
     }
