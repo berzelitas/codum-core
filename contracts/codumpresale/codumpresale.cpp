@@ -256,7 +256,7 @@ void codumpresale::distribute(const uint64_t id)
 void codumpresale::refundsale(uint64_t id, string refund_tx)
 {
   require_auth(_self);
-  eosio_assert(get_sale_state(softcap) < 0 && (get_sale_state(hardcap) > 1), "cannot refund if soft cap reached but hard cap not");
+  //eosio_assert(get_sale_state(softcap) < 0 && (get_sale_state(hardcap) > 1), "cannot refund if soft cap reached but hard cap not");
   contributions contribution_table(_self, _self);
 
   auto r = contribution_table.find(id);
@@ -264,14 +264,14 @@ void codumpresale::refundsale(uint64_t id, string refund_tx)
   eosio_assert(r->refunded == 0, "contribution is already refunded");
   if (r->validated > 0 && r->refund.amount > 0)
   {
-    if (r->network == NETWORK_EOS)
-    {
-      action(
-          {N(codumpresale), N(active)},
-          tokencontract, N(transfer),
-          std::make_tuple(N(codumpresale), r->contributor, r->refund, r->memo))
-          .send();
-    }
+    // if (r->network == NETWORK_EOS)
+    // {
+    //   action(
+    //       {N(codumpresale), N(active)},
+    //       tokencontract, N(transfer),
+    //       std::make_tuple(N(codumpresale), r->contributor, r->refund, r->memo))
+    //       .send();
+    // }
     if (refund_tx != "")
     {
       contribution_table.modify(r, _self, [&](auto &val) {

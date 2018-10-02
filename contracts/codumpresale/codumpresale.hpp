@@ -77,7 +77,7 @@ private:
 
   typedef eosio::multi_index<N(whitelist), whitelist> whitelists;
 
-  // @abi table contribution i64
+  /// @abi table contribution i64
   struct contribution
   {
     uint64_t id;
