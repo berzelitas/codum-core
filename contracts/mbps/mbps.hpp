@@ -25,21 +25,17 @@ namespace eosio {
     [[eosio::action]]
     void issue(account_name to, asset quantity, string memo);
 
-    [[eosio::action]] //TODO implementation
-    void transferid(account_name from,
-                        account_name to,
-                        id_type id,
-                        string memo) {};
-
     [[eosio::action]]
     void transfer(account_name from, account_name to, asset quantity, string memo);
 
     [[eosio::action]] //TODO implementation
-    void burn(account_name owner,
-                    id_type token_id) {};
+    void transferid(account_name from, account_name to, id_type id, string memo);
 
     [[eosio::action]] //TODO implementation
-    void setrampayer(account_name payer, id_type id) {};
+    void burn(account_name owner, id_type token_id);
+
+    [[eosio::action]] //TODO implementation
+    void setrampayer(account_name payer, id_type id);
     
 
     struct [[eosio::table]] account {
@@ -103,8 +99,6 @@ namespace eosio {
       EOSLIB_SERIALIZE(schedule, (id)(bond)(weight)(deadline)(budget)(token_budget)(funding_status)(execution_status))
     };
 
-    using schedules = eosio::multi_index<N(schedule), schedule,
-            indexed_by < N(bond_symbol), const_mem_fun < schedule, uint64_t, &schedule::get_bond_symbol> > >;
 
     using account_index = eosio::multi_index<N(accounts), account>;
 
@@ -114,6 +108,9 @@ namespace eosio {
                         indexed_by< N( byowner ), const_mem_fun< token, account_name, &token::get_owner> >,
                         indexed_by< N( bysymbol ), const_mem_fun< token, uint64_t, &token::get_symbol> >,
                         indexed_by< N( byname ), const_mem_fun< token, uint64_t, &token::get_name> > >;
+                        
+    using schedules = eosio::multi_index<N(schedule), schedule,
+            indexed_by < N(bond_symbol), const_mem_fun < schedule, uint64_t, &schedule::get_bond_symbol> > >;
 
   private:
     friend eosiosystem::system_contract;
@@ -121,7 +118,8 @@ namespace eosio {
     token_index tokens;
 
     // PRIVATE UTILITY FUNCTIONS
-    void mint(account_name owner, account_name ram_payer, asset value, string uri, string name); //from nft
+    void mint(account_name owner, account_name ram_payer, asset value, string uri, string name);
+    
     void sub_balance(account_name owner, asset value);
     void add_balance(account_name owner, asset value, account_name ram_payer);
     void sub_supply(asset quantity);
@@ -130,8 +128,6 @@ namespace eosio {
     inline asset get_supply(symbol_name sym) const;
 
     inline asset get_balance(account_name owner, symbol_name sym) const;
-
-    typedef eosio::multi_index<N(accounts), account> accounts;
   };
 
   asset bond::get_supply(symbol_name sym) const {
@@ -141,7 +137,7 @@ namespace eosio {
   }
 
   asset bond::get_balance(account_name owner, symbol_name sym) const {
-      accounts accountstable(_self, owner);
+      account_index accountstable(_self, owner);
       const auto &ac = accountstable.get(sym);
       return ac.balance;
   }
