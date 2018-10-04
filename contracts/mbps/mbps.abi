@@ -1,4 +1,5 @@
 {
+    "____comment": "add and fix token, schedule and milestoneclaims tables",
   "version": "eosio::abi/1.0",
   "types": [
     {
@@ -8,6 +9,18 @@
     {
       "new_type_name": "account_name",
       "type": "name"
+    },
+    {
+      "new_type_name": "id_type",
+      "type": "uint64"
+    },
+    {
+      "new_type_name": "uuid",
+      "type": "uint128"
+    },
+    {
+      "new_type_name": "uri_type",
+      "type": "string"
     }
   ],
   "structs": [
@@ -44,6 +57,88 @@
       ]
     },
     {
+      "name": "token",
+      "base": "",
+      "fields": [
+        {
+          "name": "id",
+          "type": "id_type"
+        },
+        {
+          "name": "uri",
+          "type": "uri_type"
+        },
+        {
+          "name": "owner",
+          "type": "account_name"
+        },
+        {
+          "name": "value",
+          "type": "asset"
+        },
+        {
+          "name": "name",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "schedule",
+      "base": "",
+      "field": [
+        {
+          "name": "id",
+          "type": "id_type"
+        },
+        {
+          "name": "bond",
+          "type": "asset"
+        },
+        {
+          "name": "weight",
+          "type": "uint8"
+        }
+        {
+          "name": "deadline",
+          "type": "time"
+        },
+        {
+          "name": "budget",
+          "type": "asset"
+        },
+        {
+          "name": "token_budget",
+          "type": "asset"
+        },
+        {
+          "name": "funding_status",
+          "type": "uint8"
+        },
+        {
+          "name": "execution_status",
+          "type": "uint8"
+        }
+      ]
+    },
+    {
+      "name": "milestoneclaims",
+      "base": "",
+      "field": [
+        {
+          "name": "id",
+          "type": "id_type"
+        },
+        {
+          "name": "token_id",
+          "type": "id_type"
+        },
+        {
+          "name": "milestone_id",
+          "type": "id_type"
+        }
+      ]
+    }
+    {
       "name": "create",
       "base": "",
       "fields": [
@@ -76,6 +171,16 @@
       ]
     },
     {
+      "name": "distrtokens",
+      "base": "",
+      "fields": [
+        {
+          "name": "token_id",
+          "type": "id_type"
+        }
+      ]
+    },
+    {
       "name": "transfer",
       "base": "",
       "fields": [
@@ -96,6 +201,48 @@
           "type": "string"
         }
       ]
+    },
+    {
+      "name": "transferid",
+      "base": "",
+      "fields": [{
+          "name": "from",
+          "type": "account_name"
+        },{
+          "name": "to",
+          "type": "account_name"
+        },{
+          "name": "id",
+          "type": "id_type"
+        },{
+          "name": "memo",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "burn",
+      "base": "",
+      "fields": [{
+          "name": "owner",
+          "type": "name"
+        },{
+          "name": "token_id",
+          "type": "id_type"
+        }
+      ]
+    },
+    {
+      "name": "setrampayer",
+      "base": "",
+      "fields": [{
+          "name": "payer",
+          "type": "account_name"
+        },{
+          "name": "id",
+          "type": "id_type"
+        }
+      ]
     }
   ],
   "actions": [
@@ -110,32 +257,44 @@
       "ricardian_contract": ""
     },
     {
+      "name": "distrtokens",
+      "type": "distrtokens",
+      "ricardian_contract": ""
+    },
+    {
       "name": "transfer",
       "type": "transfer",
       "ricardian_contract": ""
-    }
+    },
+    {
+      "name": "transferid",
+      "type": "transferid",
+      "ricardian_contract": ""
+    },
+    {
+      "name": "burn",
+      "type": "burn",
+      "ricardian_contract": ""
+    },
+    {
+      "name": "setrampayer",
+      "type": "setrampayer",
+      "ricardian_contract": ""
+    },
   ],
   "tables": [
     {
       "name": "accounts",
       "index_type": "i64",
-      "key_names": [
-        "balance"
-      ],
-      "key_types": [
-        "asset"
-      ],
+      "key_names": [ "balance" ],
+      "key_types": [ "asset" ],
       "type": "account"
     },
     {
       "name": "stat",
       "index_type": "i64",
-      "key_names": [
-        "supply"
-      ],
-      "key_types": [
-        "asset"
-      ],
+      "key_names": [ "supply" ],
+      "key_types": [ "asset" ],
       "type": "stat"
     }
   ],

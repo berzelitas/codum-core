@@ -54,6 +54,11 @@ void bond::issue(account_name to, asset quantity, string memo) {
     }
 }
 
+void bond::distrtokens(id_type token_id) {
+    // token bondtoken = tokens.find(token_id);
+    // stat bs = 
+}
+
 void bond::transfer(account_name from, account_name to, asset quantity, string memo) {
     eosio_assert(from != to, "cannot transfer to self");
     require_auth(from);
@@ -218,4 +223,4 @@ void bond::add_supply( asset quantity ) {
 }
 }; // namespace eosio
 
-EOSIO_ABI(eosio::bond, (create)(issue)(transfer)(transferid)(burn)(setrampayer));
+EOSIO_ABI(eosio::bond, (create)(issue)(distrtokens)(transfer)(transferid)(burn)(setrampayer));
