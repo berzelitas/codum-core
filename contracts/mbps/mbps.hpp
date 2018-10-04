@@ -54,6 +54,26 @@ private:
 
   typedef eosio::multi_index<N(stat), stat> stats;
 
+  struct [[eosio::table]] schedule {
+    uint64_t id;
+    asset bond;
+    uint8_t weight;
+    time deadline;
+    asset budget;
+    asset token_budget;
+    uint8_t funding_status;
+    uint8_t execution_status;
+
+    uint64_t primary_key() const { return id; }
+
+    uint64_t get_bond_symbol() const { return bond.symbol.name(); }
+
+    EOSLIB_SERIALIZE(schedule, (id)(bond)(weight)(deadline)(budget)(token_budget)(funding_status)(execution_status))
+  };
+
+  using schedules = eosio::multi_index<N(schedule), schedule,
+          indexed_by < N(bond_symbol), const_mem_fun < schedule, uint64_t, &schedule::get_bond_symbol> > >;
+
   void sub_balance(account_name owner, asset value);
 
   void add_balance(account_name owner, asset value, account_name ram_payer);
