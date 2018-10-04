@@ -218,4 +218,4 @@ void bond::add_supply( asset quantity ) {
 }
 }; // namespace eosio
 
-EOSIO_ABI(eosio::bond, (create)(issue)(transfer));
+EOSIO_ABI(eosio::bond, (create)(issue)(transfer)(transferid)(burn)(setrampayer));

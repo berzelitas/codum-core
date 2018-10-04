@@ -99,6 +99,15 @@ namespace eosio {
       EOSLIB_SERIALIZE(schedule, (id)(bond)(weight)(deadline)(budget)(token_budget)(funding_status)(execution_status))
     };
 
+    struct [[eosio::table]] milestoneclaims {
+    uint64_t id;
+    uint64_t token_id;
+    uint64_t milestone_id;
+
+    uint64_t primary_key() const { return id; };
+    uint64_t get_token_id() const { return token_id; };
+    uint64_t get_milestone_id() const { return milestone_id; };
+  };
 
     using account_index = eosio::multi_index<N(accounts), account>;
 
@@ -108,9 +117,14 @@ namespace eosio {
                         indexed_by< N( byowner ), const_mem_fun< token, account_name, &token::get_owner> >,
                         indexed_by< N( bysymbol ), const_mem_fun< token, uint64_t, &token::get_symbol> >,
                         indexed_by< N( byname ), const_mem_fun< token, uint64_t, &token::get_name> > >;
-                        
+
     using schedules = eosio::multi_index<N(schedule), schedule,
             indexed_by < N(bond_symbol), const_mem_fun < schedule, uint64_t, &schedule::get_bond_symbol> > >;
+
+    using milestoneclaims_index = eosio::multi_index<N(milestoneclaims), milestoneclaims, 
+                                                    indexed_by<N(bytoken), eosio::const_mem_fun< milestoneclaims, uint64_t, &milestoneclaims::get_token_id> >,
+                                                    indexed_by<N(bymilestone), eosio::const_mem_fun< milestoneclaims, uint64_t, &milestoneclaims::get_milestone_id> > >;
+
 
   private:
     friend eosiosystem::system_contract;
