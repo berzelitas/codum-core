@@ -10,145 +10,140 @@ class system_contract;
 }
 
 namespace eosio {
+  using std::string;
+  typedef uint128_t uuid;
+  typedef uint64_t id_type;
+  typedef string uri_type;
 
-using std::string;
+  class bond : public contract {
+  public:
+    bond(account_name self) : contract(self), tokens(_self, _self) {}
 
-class bond : public contract {
-public:
-  bond(account_name self) : contract(self) {}
+    [[eosio::action]]
+    void create(account_name issuer, asset maximum_supply);
 
-  [[eosio::action]]
-  void create(account_name issuer, asset maximum_supply);
+    [[eosio::action]]
+    void issue(account_name to, asset quantity, string memo);
 
-  [[eosio::action]]
-  void issue(account_name to, asset quantity, string memo);
+    [[eosio::action]] //TODO implementation
+    void transferid(account_name from,
+                        account_name to,
+                        id_type id,
+                        string memo) {};
 
-  [[eosio::action]] //TODO implemestation
-  void transferid(account_name from,
-                      account_name to,
-                      id_type id,
-                      string memo) {};
+    [[eosio::action]]
+    void transfer(account_name from, account_name to, asset quantity, string memo);
 
-  [[eosio::action]]
-  void transfer(account_name from, account_name to, asset quantity, string memo);
+    [[eosio::action]] //TODO implementation
+    void burn(account_name owner,
+                    id_type token_id) {};
 
-  [[eosio:action]] //TODO implemestation
-  void burn(account_name owner,
-                  id_type token_id) {};
+    [[eosio::action]] //TODO implementation
+    void setrampayer(account_name payer, id_type id) {};
+    
 
-  [[eosio::action]] //TODO implemestation
-  void setrampayer(account_name payer, id_type id) {};
-  
+    struct [[eosio::table]] account {
+      asset balance;
 
-  struct [[eosio::table]] account {
-    asset balance;
+      uint64_t primary_key() const { return balance.symbol.name(); }
+    };
 
-    uint64_t primary_key() const { return balance.symbol.name(); }
+    struct [[eosio::table]] stat {
+      asset supply;
+      asset max_supply;
+      account_name issuer;
+      string project;
 
-    EOSLIB_SERIALIZE(account, (balance))
+      uint64_t primary_key() const { return supply.symbol.name(); }
+    };
+
+    struct [[eosio::table]] token {
+      id_type id;          // Unique 64 bit identifier
+      uri_type uri;        // RFC 3986
+      account_name owner;  // token owner
+      asset value;         // token value (1 SYS)
+      string name;	 // token name
+
+      id_type primary_key() const { return id; }
+      account_name get_owner() const { return owner; }
+      string get_uri() const { return uri; }
+      asset get_value() const { return value; }
+      uint64_t get_symbol() const { return value.symbol.name(); }
+      uint64_t get_name() const { return string_to_name(name.c_str()); }
+
+      uuid get_global_id() const
+      {
+        uint128_t self_128 = static_cast<uint128_t>(N(_self));
+        uint128_t id_128 = static_cast<uint128_t>(id);
+        uint128_t res = (self_128 << 64) | (id_128);
+        return res;
+      }
+
+      string get_unique_name() const
+      {
+        string unique_name = name + "#" + std::to_string(id);
+        return unique_name;
+      }
+    };
+
+    struct [[eosio::table]] schedule {
+      uint64_t id;
+      asset bond;
+      uint8_t weight;
+      time deadline;
+      asset budget;
+      asset token_budget;
+      uint8_t funding_status;
+      uint8_t execution_status;
+
+      uint64_t primary_key() const { return id; }
+
+      uint64_t get_bond_symbol() const { return bond.symbol.name(); }
+
+      EOSLIB_SERIALIZE(schedule, (id)(bond)(weight)(deadline)(budget)(token_budget)(funding_status)(execution_status))
+    };
+
+    using schedules = eosio::multi_index<N(schedule), schedule,
+            indexed_by < N(bond_symbol), const_mem_fun < schedule, uint64_t, &schedule::get_bond_symbol> > >;
+
+    using account_index = eosio::multi_index<N(accounts), account>;
+
+    using stats = eosio::multi_index<N(stat), stat>;
+
+    using token_index = eosio::multi_index<N(token), token,
+                        indexed_by< N( byowner ), const_mem_fun< token, account_name, &token::get_owner> >,
+                        indexed_by< N( bysymbol ), const_mem_fun< token, uint64_t, &token::get_symbol> >,
+                        indexed_by< N( byname ), const_mem_fun< token, uint64_t, &token::get_name> > >;
+
+  private:
+    friend eosiosystem::system_contract;
+
+    token_index tokens;
+
+    // PRIVATE UTILITY FUNCTIONS
+    void mint(account_name owner, account_name ram_payer, asset value, string uri, string name); //from nft
+    void sub_balance(account_name owner, asset value);
+    void add_balance(account_name owner, asset value, account_name ram_payer);
+    void sub_supply(asset quantity);
+    void add_supply(asset quantity);
+
+    inline asset get_supply(symbol_name sym) const;
+
+    inline asset get_balance(account_name owner, symbol_name sym) const;
+
+    typedef eosio::multi_index<N(accounts), account> accounts;
   };
 
-  struct [[eosio::table]] stat {
-    asset supply;
-    asset max_supply;
-    account_name issuer;
-    string project;
+  asset bond::get_supply(symbol_name sym) const {
+      stats statstable(_self, sym);
+      const auto &st = statstable.get(sym);
+      return st.supply;
+  }
 
-    uint64_t primary_key() const { return supply.symbol.name(); }
-
-    EOSLIB_SERIALIZE(stat, (supply)(max_supply)(issuer)(project))
-  };
-
-  typedef eosio::multi_index<N(stat), stat> stats;
-
-  struct token {
-    id_type id;          // Unique 64 bit identifier,
-    uri_type uri;        // RFC 3986
-    account_name owner;  // token owner
-    asset value;         // token value (1 SYS)
-	  string name;	 // token name
-
-    id_type primary_key() const { return id; }
-    account_name get_owner() const { return owner; }
-    string get_uri() const { return uri; }
-    asset get_value() const { return value; }
-	  uint64_t get_symbol() const { return value.symbol.name(); }
-	  uint64_t get_name() const { return string_to_name(name.c_str()); }
-
-	  uuid get_global_id() const
-	  {
-		  uint128_t self_128 = static_cast<uint128_t>(N(_self));
-      uint128_t id_128 = static_cast<uint128_t>(id);
-      uint128_t res = (self_128 << 64) | (id_128);
-      return res;
-	  }
-
-	  string get_unique_name() const
-	  {
-		  string unique_name = name + "#" + std::to_string(id);
-		  return unique_name;
-	  }
-  };
-
-	using account_index = eosio::multi_index<N(accounts), account>;
-
-	using currency_index = eosio::multi_index<N(stat), stats,
-	                       indexed_by< N( byissuer ), const_mem_fun< stats, account_name, &stats::get_issuer> > >;
-
-	using token_index = eosio::multi_index<N(token), token,
-	                    indexed_by< N( byowner ), const_mem_fun< token, account_name, &token::get_owner> >,
-			                indexed_by< N( bysymbol ), const_mem_fun< token, uint64_t, &token::get_symbol> >,
-		                  indexed_by< N( byname ), const_mem_fun< token, uint64_t, &token::get_name> > >;
-
-  struct [[eosio::table]] schedule {
-    uint64_t id;
-    asset bond;
-    uint8_t weight;
-    time deadline;
-    asset budget;
-    asset token_budget;
-    uint8_t funding_status;
-    uint8_t execution_status;
-
-    uint64_t primary_key() const { return id; }
-
-    uint64_t get_bond_symbol() const { return bond.symbol.name(); }
-
-    EOSLIB_SERIALIZE(schedule, (id)(bond)(weight)(deadline)(budget)(token_budget)(funding_status)(execution_status))
-  };
-
-  using schedules = eosio::multi_index<N(schedule), schedule,
-          indexed_by < N(bond_symbol), const_mem_fun < schedule, uint64_t, &schedule::get_bond_symbol> > >;
-
-private:
-  friend eosiosystem::system_contract;
-
-	token_index tokens;
-
-  void mint(account_name owner, account_name ram_payer, asset value, string uri, string name);
-
-  void sub_balance(account_name owner, asset value);
-  void add_balance(account_name owner, asset value, account_name ram_payer);
-  void sub_supply(asset quantity);
-  void add_supply(asset quantity);
-
-  inline asset get_supply(symbol_name sym) const;
-
-  inline asset get_balance(account_name owner, symbol_name sym) const;
-
-  typedef eosio::multi_index<N(accounts), account> accounts;
-};
-
-asset bond::get_supply(symbol_name sym) const {
-    stats statstable(_self, sym);
-    const auto &st = statstable.get(sym);
-    return st.supply;
-}
-
-asset bond::get_balance(account_name owner, symbol_name sym) const {
-    accounts accountstable(_self, owner);
-    const auto &ac = accountstable.get(sym);
-    return ac.balance;
-}
+  asset bond::get_balance(account_name owner, symbol_name sym) const {
+      accounts accountstable(_self, owner);
+      const auto &ac = accountstable.get(sym);
+      return ac.balance;
+  }
 
 }; // namespace eosio
