@@ -60,23 +60,39 @@ void bond::distrtokens(id_type token_id) {
 }
 
 void bond::transfer(account_name from, account_name to, asset quantity, string memo) {
-    eosio_assert(from != to, "cannot transfer to self");
-    require_auth(from);
-    eosio_assert(is_account(to), "to account does not exist");
-    auto sym = quantity.symbol.name();
-    stats statstable(_self, sym);
-    const auto &st = statstable.get(sym);
+    // Ensure authorized to send from account
+    eosio_assert( from != to, "cannot transfer to self" );
+    require_auth( from );
 
-    require_recipient(from);
-    require_recipient(to);
+    // Ensure 'to' account exists
+    eosio_assert( is_account( to ), "to account does not exist");
 
-    eosio_assert(quantity.is_valid(), "invalid quantity");
-    eosio_assert(quantity.amount > 0, "must transfer positive quantity");
-    eosio_assert(quantity.symbol == st.supply.symbol, "symbol precision mismatch");
-    eosio_assert(memo.size() <= 256, "memo has more than 256 bytes");
+    // Check memo size and print
+    eosio_assert( memo.size() <= 256, "memo has more than 256 bytes" );
 
-    sub_balance(from, quantity);
-    add_balance(to, quantity, from);
+	eosio_assert( quantity.amount == 1, "cannot transfer quantity, not equal to 1" );
+
+	auto symbl = tokens.get_index<N(bysymbol)>();
+
+	bool found = false;
+	id_type id = 0;
+	for(auto it=symbl.begin(); it!=symbl.end(); ++it){
+
+		if( it->value.symbol == quantity.symbol && it->owner == from) {
+			id = it->id;
+			found = true;
+			break;
+		}
+	}
+
+	eosio_assert(found, "token is not found or is not owned by account");
+
+	// Notify both recipients
+    require_recipient( from );
+	require_recipient( to );
+
+	SEND_INLINE_ACTION( *this, transferid, {from, N(active)}, {from, to, id, memo} );
+    }
 }
 
 void bond::transferid(account_name from, account_name to, id_type id, string memo) {
