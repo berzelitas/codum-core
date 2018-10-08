@@ -190,7 +190,7 @@ void bond::addmilestone(
     stats statstable(_self, bond_symbol.name());
     auto bs = statstable.find(bond_symbol.name());
 
-    eosio_assert(bs != statstable.end, "Non-existed stats for bond.");
+    eosio_assert(bs != statstable.end(), "Non-existed stats for bond.");
     require_auth(bs.token_contract);
 
     eosio_assert(deadline > bs.start && deadline < bs.end, "The deadline must be between of start and end.");
@@ -211,7 +211,7 @@ void bond::addmilestone(
 
     schedules schedulable(_self, bond.symbol.name());
     schedulable.emplace(_self, [&](auto &s) {
-        s.id = 0;
+        s.id = schedulable.available_primary_key();
         s.bond = bond;
         s.weight = weight;
         s.deadline = deadline;
@@ -219,6 +219,63 @@ void bond::addmilestone(
         s.token_budget = token_budget;
         s.funding_status = 0;
         s.execution_status = 0;
+    });
+}
+
+void bond::updatemilest(
+  uint64_t id,
+  uint16_t weight,
+  time deadline,
+  uint64_t budget,
+  uint64_t token_budget,
+  uint8 execution_status,
+  string update_message,
+  string press_release_url
+) {
+    schedules schedulable(_self, budget);
+    const auto &m = schedulable.get(id, "No schedule object found.");
+
+    stats statstable(_self, budget);
+    auto bs = statstable.find(m.bond.symbol_name());
+
+    eosio_assert(bs != statstable.end(), "Non-existed stats for bond.");
+
+    require_auth(bs.token_contract);
+
+    eosio_assert(m.execution_status < 0 || m.execution_status >= 100 || execution_status >= 0 && execution_status <= 100, "Wrong execution status.");
+
+    eosio_assert(m.execution_status >= 100 && m.execution_status == execution_status, "Cannot update milestone execution status which is submitted for completion.");
+
+    bool last_deadline = m.funding_status == 0;
+    if (last_deadline) {
+        auto itr = schedulable.lower_bound(statstable.start());
+        for (; itr != accidx.end(); ++itr) {
+            if (itr->id != id && itr->execution_status < 100 && itr->deadline > m.deadline) {
+                last_deadline = false;
+                break;
+            }
+        }
+    }
+
+    if (m.executation_status == 100) {
+        eosio_assert(m.budget == budget, "Argument 'budget' is forbidden.");
+        eosio_assert(m.deadline == deadline, "Argument 'deadline' is forbidden.");
+        eosio_assert(m.token_budget == token_budget, "Argument 'token_budget' is forbidden.");
+        eosio_assert(m.weight == weight, "Argument 'weight' is forbidden.");
+    }
+
+    schedulable.modify(m, _self, [&](auto &mt) {
+        ms.deadline = deadline;
+
+        if (last_deadline) {
+            mt.weight = weight;
+            mt.budget.amount = budget;
+            mt.token_budget.amount = token_budget;
+        }
+
+        if (executation_status != 100) {
+            mt.executation_status = executation_status;
+        }
     });
 }
 

@@ -52,6 +52,18 @@ public:
     string epic_url
   );
 
+  [[eosio::action]]
+  void updatemilest(
+    uint64_t id,
+    uint16_t weight,
+    time deadline,
+    uint64_t budget,
+    uint64_t token_budget,
+    uint8 execution_status,
+    string update_message,
+    string press_release_url
+  );
+
   struct [[eosio::table]] account {
     asset balance;
 
