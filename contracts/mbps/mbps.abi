@@ -1,5 +1,5 @@
 {
-    "____comment": "add and fix token, schedule and milestoneclaims tables",
+  "____comment": "add and fix token, schedule and milestoneclaims tables",
   "version": "eosio::abi/1.0",
   "types": [
     {
@@ -97,7 +97,7 @@
         {
           "name": "weight",
           "type": "uint8"
-        }
+        },
         {
           "name": "deadline",
           "type": "time"
@@ -137,7 +137,7 @@
           "type": "id_type"
         }
       ]
-    }
+    },
     {
       "name": "create",
       "base": "",
@@ -205,16 +205,20 @@
     {
       "name": "transferid",
       "base": "",
-      "fields": [{
+      "fields": [
+        {
           "name": "from",
           "type": "account_name"
-        },{
+        },
+        {
           "name": "to",
           "type": "account_name"
-        },{
+        },
+        {
           "name": "id",
           "type": "id_type"
-        },{
+        },
+        {
           "name": "memo",
           "type": "string"
         }
@@ -223,10 +227,12 @@
     {
       "name": "burn",
       "base": "",
-      "fields": [{
+      "fields": [
+        {
           "name": "owner",
           "type": "name"
-        },{
+        },
+        {
           "name": "token_id",
           "type": "id_type"
         }
@@ -235,12 +241,90 @@
     {
       "name": "setrampayer",
       "base": "",
-      "fields": [{
+      "fields": [
+        {
           "name": "payer",
           "type": "account_name"
-        },{
+        },
+        {
           "name": "id",
           "type": "id_type"
+        }
+      ]
+    },
+    {
+      "name": "addmilestone",
+      "base": "",
+      "fields": [
+        {
+          "name": "bond",
+          "type": "asset"
+        },
+        {
+          "name": "weight",
+          "type": "uint16"
+        },
+        {
+          "name": "deadline",
+          "type": "time"
+        },
+        {
+          "name": "budget",
+          "type": "asset"
+        },
+        {
+          "name": "token_budget",
+          "type": "asset"
+        },
+        {
+          "name": "milestone",
+          "type": "string"
+        },
+        {
+          "name": "press_release_url",
+          "type": "string"
+        },
+        {
+          "name": "epic_url",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "updatemilest",
+      "base": "",
+      "fields": [
+        {
+          "name": "id",
+          "type": "uint64"
+        },
+        {
+          "name": "weight",
+          "type": "uint16"
+        },
+        {
+          "name": "deadline",
+          "type": "time"
+        },
+        {
+          "name": "budget",
+          "type": "uint64"
+        },
+        {
+          "name": "token_budget",
+          "type": "uint64"
+        },
+        {
+          "name": "execution_status",
+          "type": "uint8"
+        },
+        {
+          "name": "update_message",
+          "type": "string"
+        },
+        {
+          "name": "press_release_url",
+          "type": "string"
         }
       ]
     }
@@ -281,20 +365,38 @@
       "type": "setrampayer",
       "ricardian_contract": ""
     },
+    {
+      "name": "addmilestone",
+      "type": "addmilestone",
+      "ricardian_contract": ""
+    },
+    {
+      "name": "updatemilest",
+      "type": "updatemilest",
+      "ricardian_contract": ""
+    }
   ],
   "tables": [
     {
       "name": "accounts",
       "index_type": "i64",
-      "key_names": [ "balance" ],
-      "key_types": [ "asset" ],
+      "key_names": [
+        "balance"
+      ],
+      "key_types": [
+        "asset"
+      ],
       "type": "account"
     },
     {
       "name": "stat",
       "index_type": "i64",
-      "key_names": [ "supply" ],
-      "key_types": [ "asset" ],
+      "key_names": [
+        "supply"
+      ],
+      "key_types": [
+        "asset"
+      ],
       "type": "stat"
     }
   ],

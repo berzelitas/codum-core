@@ -228,7 +228,7 @@ void bond::updatemilest(
   time deadline,
   uint64_t budget,
   uint64_t token_budget,
-  uint8 execution_status,
+  uint8_t execution_status,
   string update_message,
   string press_release_url
 ) {
@@ -328,4 +328,7 @@ void bond::add_supply(asset quantity) {
 }
 }; // namespace eosio
 
-EOSIO_ABI(eosio::bond, (create)(issue)(distrtokens)(transfer)(transferid)(burn)(setrampayer)(addmilestone));
+EOSIO_ABI(
+  eosio::bond,
+  (create)(issue)(distrtokens)(transfer)(transferid)(burn)(setrampayer)(addmilestone)(updatemilest)
+);
