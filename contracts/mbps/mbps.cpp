@@ -190,7 +190,7 @@ void bond::mint(account_name owner, account_name ram_payer, asset value, string 
 
 void bond::addmilestone(
   asset bond,
-  uint16_t weight,
+  uint24_t weight,
   time deadline,
   asset budget,
   asset token_budget,
@@ -240,7 +240,7 @@ void bond::addmilestone(
 
 void bond::updatemilest(
   uint64_t id,
-  uint16_t weight,
+  uint24_t weight,
   time deadline,
   uint64_t budget,
   uint64_t token_budget,

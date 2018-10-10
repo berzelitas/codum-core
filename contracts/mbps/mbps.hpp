@@ -43,7 +43,7 @@ public:
   [[eosio::action]]
   void addmilestone(
     asset bond,
-    uint16_t weight,
+    uint24_t weight,
     time deadline,
     asset budget,
     asset token_budget,
@@ -55,7 +55,7 @@ public:
   [[eosio::action]]
   void updatemilest(
     uint64_t id,
-    uint16_t weight,
+    uint24_t weight,
     time deadline,
     uint64_t budget,
     uint64_t token_budget,
@@ -114,7 +114,7 @@ public:
   struct [[eosio::table]] schedule {
     id_type id;
     asset bond;
-    uint8_t weight;
+    uint24_t weight;
     time deadline;
     asset budget;
     asset token_budget;
