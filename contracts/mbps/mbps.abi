@@ -485,7 +485,15 @@
       "type": "token"
     },
     {
-      
+      "name": "milestone",
+      "index_type": "i64",
+      "key_names": [
+        "id"
+      ],
+      "key_types": [
+        "uint64"
+      ],
+      "type": "milestoneclaims"
     }
   ],
   "ricardian_clauses": [],
