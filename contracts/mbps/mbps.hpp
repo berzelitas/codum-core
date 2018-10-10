@@ -4,6 +4,7 @@
 #include <eosiolib/eosio.hpp>
 
 #include <string>
+#include <vector>
 
 namespace eosiosystem {
 class system_contract;
@@ -20,6 +21,20 @@ public:
 
   [[eosio::action]]
   void create(account_name issuer, asset maximum_supply);
+
+  [[eosio::action]]
+  void setupbond(
+    asset bond,
+    string project,
+    asset token_price,
+    account_name budget_contract,
+    asset token_budget,
+    asset tokens_in_bond,
+    account_name token_contract,
+    time start,
+    time fundraising_end,
+    time end
+  );
 
   [[eosio::action]]
   void issue(account_name to, asset quantity, string name, string memo);
@@ -42,7 +57,7 @@ public:
   [[eosio::action]]
   void addmilestone(
     asset bond,
-    uint24_t weight,
+    uint32_t weight,
     time deadline,
     asset budget,
     asset token_budget,
@@ -54,7 +69,7 @@ public:
   [[eosio::action]]
   void updatemilest(
     uint64_t id,
-    uint24_t weight,
+    uint32_t weight,
     time deadline,
     uint64_t budget,
     uint64_t token_budget,
@@ -69,11 +84,19 @@ public:
     uint64_t primary_key() const { return balance.symbol.name(); }
   };
 
-  struct [[eosio::table]] stat {
+  struct [[eosio::table]] stats {
     asset supply;
     asset max_supply;
     account_name issuer;
     string project;
+    asset token_price;
+    account_name budget_contract;
+    asset token_budget;
+    asset tokens_in_bond;
+    account_name token_contract;
+    time start;
+    time fundraising_end;
+    time end;
 
     uint64_t primary_key() const { return supply.symbol.name(); }
   };
@@ -110,7 +133,7 @@ public:
   struct [[eosio::table]] schedule {
     id_type id;
     asset bond;
-    uint24_t weight;
+    uint32_t weight;
     time deadline;
     asset budget;
     asset token_budget;
@@ -136,19 +159,20 @@ public:
 
   using account_index = eosio::multi_index<N(accounts), account>;
 
-  using stats = eosio::multi_index<N(stat), stat>;
+  using stats = eosio::multi_index<N(stat), stats,
+    indexed_by < N(byissuer), const_mem_fun < stats, account_name, &stats::get_issuer> > >;
 
   using token_index = eosio::multi_index<N(token), token,
-    indexed_by< N(byowner), const_mem_fun < token, account_name, &token::get_owner> >,
-    indexed_by< N(bysymbol), const_mem_fun < token, uint64_t, &token::get_symbol> >,
-    indexed_by< N(byname), const_mem_fun < token, uint64_t, &token::get_name> > >;
+    indexed_by < N(byowner), const_mem_fun < token, account_name, &token::get_owner> >,
+    indexed_by<N(bysymbol), const_mem_fun < token, uint64_t, &token::get_symbol> >,
+    indexed_by<N(byname), const_mem_fun < token, uint64_t, &token::get_name> > >;
 
-  using schedules = eosio::multi_index<N(schedule), schedule,
-    indexed_by< N(bond_symbol), const_mem_fun < schedule, uint64_t, &schedule::get_bond_symbol> > >;
+  using schedule_index = eosio::multi_index<N(schedule), schedule,
+    indexed_by < N(bysymbol), const_mem_fun < schedule, uint64_t, &schedule::get_bond_symbol> > >;
 
   using milestoneclaims_index = eosio::multi_index<N(milestone), milestoneclaims,
-    indexed_by< N(bytoken), eosio::const_mem_fun<milestoneclaims, uint64_t, &milestoneclaims::get_token_id> >,
-    indexed_by< N(bymilestone), eosio::const_mem_fun<milestoneclaims, uint64_t, &milestoneclaims::get_milestone_id> > >;
+    indexed_by < N(bytoken), eosio::const_mem_fun<milestoneclaims, uint64_t, &milestoneclaims::get_token_id> >,
+    indexed_by<N(bymilestone), eosio::const_mem_fun<milestoneclaims, uint64_t, &milestoneclaims::get_milestone_id> > >;
 
 
 private:

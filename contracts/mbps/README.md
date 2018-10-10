@@ -36,4 +36,4 @@ The **execution_status** field will signal the status of milestone progress, whe
 ### How to build with Docker
 
 1. Build image: `docker build -t mbps-builder .`
-2. Run building: ``docker run -v `pwd`/build:/build mbps-builder eosio-cpp -o /build/mbps.wasm mbps.cpp``
+2. Run building: ``docker run -v `pwd`:/build mbps-builder eosio-cpp -o /build/mbps.wasm /build/mbps.cpp``

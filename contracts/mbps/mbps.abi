@@ -13,6 +13,10 @@
     {
       "new_type_name": "id_type",
       "type": "uint64"
+    },
+    {
+      "new_type_name": "uri_type",
+      "type": "string"
     }
   ],
   "structs": [
@@ -45,6 +49,38 @@
         {
           "name": "project",
           "type": "string"
+        },
+        {
+          "name": "token_price",
+          "type": "asset"
+        },
+        {
+          "name": "budget_contract",
+          "type": "account_name"
+        },
+        {
+          "name": "token_budget",
+          "type": "asset"
+        },
+        {
+          "name": "tokens_in_bond",
+          "type": "asset"
+        },
+        {
+          "name": "token_contract",
+          "type": "account_name"
+        },
+        {
+          "name": "start",
+          "type": "time"
+        },
+        {
+          "name": "fundraising_end",
+          "type": "time"
+        },
+        {
+          "name": "project",
+          "type": "time"
         }
       ]
     },
@@ -84,7 +120,7 @@
         },
         {
           "name": "weight",
-          "type": "uint24"
+          "type": "uint32"
         },
         {
           "name": "deadline",
@@ -137,6 +173,52 @@
         {
           "name": "maximum_supply",
           "type": "asset"
+        }
+      ]
+    },
+    {
+      "name": "setupbond",
+      "base": "",
+      "fields": [
+        {
+          "name": "bond",
+          "type": "asset"
+        },
+        {
+          "name": "project",
+          "type": "string"
+        },
+        {
+          "name": "token_price",
+          "type": "asset"
+        },
+        {
+          "name": "budget_contract",
+          "type": "account_name"
+        },
+        {
+          "name": "token_budget",
+          "type": "asset"
+        },
+        {
+          "name": "tokens_in_bond",
+          "type": "asset"
+        },
+        {
+          "name": "token_contract",
+          "type": "account_name"
+        },
+        {
+          "name": "start",
+          "type": "time"
+        },
+        {
+          "name": "fundraising_end",
+          "type": "time"
+        },
+        {
+          "name": "project",
+          "type": "time"
         }
       ]
     },
@@ -254,7 +336,7 @@
         },
         {
           "name": "weight",
-          "type": "uint24"
+          "type": "uint32"
         },
         {
           "name": "deadline",
@@ -292,7 +374,7 @@
         },
         {
           "name": "weight",
-          "type": "uint24"
+          "type": "uint32"
         },
         {
           "name": "deadline",
