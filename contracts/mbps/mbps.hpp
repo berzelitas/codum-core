@@ -13,7 +13,6 @@ namespace eosio {
 using std::string;
 typedef uint128_t uuid;
 typedef uint64_t id_type;
-typedef string uri_type;
 
 class bond : public contract {
 public:
@@ -23,16 +22,16 @@ public:
   void create(account_name issuer, asset maximum_supply);
 
   [[eosio::action]]
-  void issue(account_name to, asset quantity, string memo);
+  void issue(account_name to, asset quantity, string name, string memo);
 
   [[eosio::action]]
   void distrtokens(id_type token_id);
 
   [[eosio::action]]
-  void transfer(account_name from, account_name to, asset quantity, string memo);
+  void transferid(account_name from, account_name to, id_type id, string memo);
 
   [[eosio::action]]
-  void transferid(account_name from, account_name to, id_type id, string memo);
+  void transfer(account_name from, account_name to, asset quantity, string memo);
 
   [[eosio::action]]
   void burn(account_name owner, id_type token_id);
@@ -59,7 +58,7 @@ public:
     time deadline,
     uint64_t budget,
     uint64_t token_budget,
-    uint8 execution_status,
+    uint8_t execution_status,
     string update_message,
     string press_release_url
   );
@@ -81,7 +80,6 @@ public:
 
   struct [[eosio::table]] token {
     id_type id;          // Unique 64 bit identifier
-    uri_type uri;        // RFC 3986
     account_name owner;  // token owner
     asset value;         // token value (1 SYS)
     string name;     // token name
@@ -89,8 +87,6 @@ public:
     id_type primary_key() const { return id; }
 
     account_name get_owner() const { return owner; }
-
-    string get_uri() const { return uri; }
 
     asset get_value() const { return value; }
 
@@ -161,7 +157,7 @@ private:
   token_index tokens;
 
   // PRIVATE UTILITY FUNCTIONS
-  void mint(account_name owner, account_name ram_payer, asset value, string uri, string name);
+  void mint(account_name owner, account_name ram_payer, asset value, string name);
 
   void sub_balance(account_name owner, asset value);
 
@@ -174,6 +170,8 @@ private:
   inline asset get_supply(symbol_name sym) const;
 
   inline asset get_balance(account_name owner, symbol_name sym) const;
+
+  uint16_t pow(uint16_t a, uint16_t b);
 };
 
 asset bond::get_supply(symbol_name sym) const {
@@ -187,5 +185,4 @@ asset bond::get_balance(account_name owner, symbol_name sym) const {
     const auto &ac = accountstable.get(sym);
     return ac.balance;
 }
-
 }; // namespace eosio

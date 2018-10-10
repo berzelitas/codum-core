@@ -13,14 +13,6 @@
     {
       "new_type_name": "id_type",
       "type": "uint64"
-    },
-    {
-      "new_type_name": "uuid",
-      "type": "uint128"
-    },
-    {
-      "new_type_name": "uri_type",
-      "type": "string"
     }
   ],
   "structs": [
@@ -63,10 +55,6 @@
         {
           "name": "id",
           "type": "id_type"
-        },
-        {
-          "name": "uri",
-          "type": "uri_type"
         },
         {
           "name": "owner",
@@ -165,6 +153,10 @@
           "type": "asset"
         },
         {
+          "name": "name",
+          "type": "string"
+        },
+        {
           "name": "memo",
           "type": "string"
         }
@@ -177,28 +169,6 @@
         {
           "name": "token_id",
           "type": "id_type"
-        }
-      ]
-    },
-    {
-      "name": "transfer",
-      "base": "",
-      "fields": [
-        {
-          "name": "from",
-          "type": "account_name"
-        },
-        {
-          "name": "to",
-          "type": "account_name"
-        },
-        {
-          "name": "quantity",
-          "type": "asset"
-        },
-        {
-          "name": "memo",
-          "type": "string"
         }
       ]
     },
@@ -217,6 +187,28 @@
         {
           "name": "id",
           "type": "id_type"
+        },
+        {
+          "name": "memo",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "transfer",
+      "base": "",
+      "fields": [
+        {
+          "name": "from",
+          "type": "account_name"
+        },
+        {
+          "name": "to",
+          "type": "account_name"
+        },
+        {
+          "name": "quantity",
+          "type": "asset"
         },
         {
           "name": "memo",
@@ -398,6 +390,17 @@
         "asset"
       ],
       "type": "stat"
+    },
+    {
+      "name": "token",
+      "index_type": "i64",
+      "key_names": [
+        "id"
+      ],
+      "key_types": [
+        "uint64"
+      ],
+      "type": "token"
     }
   ],
   "ricardian_clauses": [],
