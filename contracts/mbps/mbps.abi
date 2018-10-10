@@ -483,6 +483,9 @@
         "uint64"
       ],
       "type": "token"
+    },
+    {
+      
     }
   ],
   "ricardian_clauses": [],

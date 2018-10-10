@@ -84,7 +84,7 @@ public:
     uint64_t primary_key() const { return balance.symbol.name(); }
   };
 
-  struct [[eosio::table]] stats {
+  struct [[eosio::table]] stat {
     asset supply;
     asset max_supply;
     account_name issuer;
@@ -99,6 +99,8 @@ public:
     time end;
 
     uint64_t primary_key() const { return supply.symbol.name(); }
+
+    account_name get_issuer() const {return issuer; }
   };
 
   struct [[eosio::table]] token {
@@ -159,8 +161,8 @@ public:
 
   using account_index = eosio::multi_index<N(accounts), account>;
 
-  using stats = eosio::multi_index<N(stat), stats,
-    indexed_by < N(byissuer), const_mem_fun < stats, account_name, &stats::get_issuer> > >;
+  using stats = eosio::multi_index<N(stat), stat,
+	  indexed_by< N( byissuer ), const_mem_fun< stat, account_name, &stat::get_issuer> > >;
 
   using token_index = eosio::multi_index<N(token), token,
     indexed_by < N(byowner), const_mem_fun < token, account_name, &token::get_owner> >,

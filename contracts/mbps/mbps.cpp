@@ -26,10 +26,10 @@ void bond::create(account_name issuer, asset maximum_supply) {
         s.max_supply = asset(maximum_supply.amount / pres, symbol);
         s.issuer = issuer;
         s.project = "";
-        s.token_price.value.symbol = sym;
+        s.token_price.symbol = symbol;
         s.budget_contract = 0;
-        s.token_budget.value.symbol = sym;
-        s.tokens_in_bond.value.symbol = sym;
+        s.token_budget.symbol = symbol;
+        s.tokens_in_bond.symbol = symbol;
         s.token_contract = 0;
         s.start = 0;
         s.fundraising_end = 0;
