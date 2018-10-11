@@ -34,11 +34,22 @@ module Cleos
     cleos_command [
       'push',
       'action',
-      ENV.fetch('CONTRACT_NAME', 'mbps'),
+      ENV.fetch('CONTRACT_NAME', 'test'),
       action_name.to_s,
       "'#{params.to_json}'",
       '-p',
       user
+    ]
+  end
+
+  def get_table(contract_name, scope, table)
+
+    cleos_command [
+      'get',
+      'table',
+      contract_name,
+      scope,
+      table
     ]
   end
 
