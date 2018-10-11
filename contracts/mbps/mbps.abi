@@ -401,10 +401,15 @@
   ],
   "actions": [
     {
+      "name": "setupbond",
+      "type": "setupbond",
+      "ricardian_contract": ""
+    },
+    {
       "name": "create",
       "type": "create",
       "ricardian_contract": ""
-    },
+    }
     {
       "name": "issue",
       "type": "issue",
@@ -479,17 +484,6 @@
         "uint64"
       ],
       "type": "token"
-    },
-    {
-      "name": "milestone",
-      "index_type": "i64",
-      "key_names": [
-        "id"
-      ],
-      "key_types": [
-        "uint64"
-      ],
-      "type": "milestoneclaims"
     }
   ],
   "ricardian_clauses": [],

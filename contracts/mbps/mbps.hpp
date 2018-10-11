@@ -146,18 +146,6 @@ public:
     uint64_t get_bond_symbol() const { return bond.symbol.name(); }
   };
 
-  struct [[eosio::table]] milestoneclaims {
-    id_type id;
-    id_type token_id;
-    id_type milestone_id;
-
-    uint64_t primary_key() const { return id; };
-
-    uint64_t get_token_id() const { return token_id; };
-
-    uint64_t get_milestone_id() const { return milestone_id; };
-  };
-
   using account_index = eosio::multi_index<N(accounts), account>;
 
   using stats = eosio::multi_index<N(stat), stat,
@@ -170,10 +158,6 @@ public:
 
   using schedule_index = eosio::multi_index<N(schedule), schedule,
     indexed_by < N(bysymbol), const_mem_fun < schedule, uint64_t, &schedule::get_bond_symbol> > >;
-
-  using milestoneclaims_index = eosio::multi_index<N(milestone), milestoneclaims,
-    indexed_by < N(bytoken), eosio::const_mem_fun<milestoneclaims, uint64_t, &milestoneclaims::get_token_id> >,
-    indexed_by<N(bymilestone), eosio::const_mem_fun<milestoneclaims, uint64_t, &milestoneclaims::get_milestone_id> > >;
 
 
 private:

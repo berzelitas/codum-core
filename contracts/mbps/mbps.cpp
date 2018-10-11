@@ -454,5 +454,5 @@ uint16_t bond::pow(uint16_t a, uint16_t b) {
 
 EOSIO_ABI(
   eosio::bond,
-  (create)(issue)(distrtokens)(transfer)(transferid)(burn)(setrampayer)(addmilestone)(updatemilest)
+  (create)(setupbond)(issue)(distrtokens)(transfer)(transferid)(burn)(setrampayer)(addmilestone)(updatemilest)
 );
