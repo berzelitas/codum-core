@@ -1,3 +1,4 @@
+require 'json'
 require 'open3'
 require 'ostruct'
 
@@ -19,7 +20,7 @@ module Cleos
   # @param  [Array|String] cmd
   # @return [OpenStruct]
   def cleos_command(cmd)
-    command cmd.is_a? Array ? [cleos_cli, *cmd] : cleos_cli + ' ' + cmd
+    command cmd.is_a?(Array) ? [cleos_cli, *cmd] : cleos_cli + ' ' + cmd
   end
 
   # Push action by cleos to eos
@@ -27,15 +28,17 @@ module Cleos
   # @param  [Symbol|String] action_name
   # @param  [Hash|Array]    params
   # @return [OpenStruct]
-  def push_aciton(action_name, params)
+  def push_action(action_name, params, user = nil)
+    user ||= ENV.fetch('CONTRACT_USER', 'eosio')
+
     cleos_command [
       'push',
       'action',
-      ENV.fetch('CONTRACT_OWNER','owner'),
+      ENV.fetch('CONTRACT_NAME', 'mbps'),
       action_name.to_s,
       "'#{params.to_json}'",
       '-p',
-      ENV.fetch('PRIVILEGE', 'eosio')
+      user
     ]
   end
 
