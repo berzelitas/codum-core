@@ -343,15 +343,15 @@ void bond::updatemilest(
   uint64_t id,
   uint32_t weight,
   time deadline,
-  uint64_t budget,
+  asset budget,
   uint8_t execution_status,
   string update_message,
   string press_release_url
 ) {
-    schedule_index schedulable(_self, budget);
+    schedule_index schedulable(_self, budget.symbol.name());
     const auto &m = schedulable.get(id, "No schedule object found.");
 
-    stats statstable(_self, budget);
+    stats statstable(_self, budget.symbol.name());
     auto bs = statstable.find(m.bond.symbol.name());
 
     eosio_assert(bs != statstable.end(), "Non-existed stats for bond.");
@@ -366,18 +366,17 @@ void bond::updatemilest(
                  "Cannot update milestone execution status which is submitted for completion.");
 
     bool last_deadline = m.funding_status == 0;
-//    if (last_deadline) {
-//        auto itr = schedulable.lower_bound(statstable.start());
-//        for (; itr != statstable.end(); ++itr) {
-//            if (itr->id != id && itr->execution_status < 100 && itr->deadline > m.deadline) {
-//                last_deadline = false;
-//                break;
-//            }
-//        }
-//    }
+    if (last_deadline) {
+        for (auto& itr : schedulable) {
+           if (itr.id != id && itr.execution_status < 100 && itr.deadline > m.deadline) {
+                last_deadline = false;
+                break;
+            }
+        }
+    }
 
     if (m.execution_status == 100) {
-        eosio_assert(m.budget.amount == budget, "Argument 'budget' is forbidden.");
+        eosio_assert(m.budget == budget, "Argument 'budget' is forbidden.");
         eosio_assert(m.deadline == deadline, "Argument 'deadline' is forbidden.");
         eosio_assert(m.weight == weight, "Argument 'weight' is forbidden.");
     }
@@ -387,7 +386,7 @@ void bond::updatemilest(
 
         if (last_deadline) {
             mt.weight = weight;
-            mt.budget.amount = budget;
+            mt.budget = budget;
         }
 
         if (execution_status != 100) {

@@ -382,11 +382,7 @@
         },
         {
           "name": "budget",
-          "type": "uint64"
-        },
-        {
-          "name": "token_budget",
-          "type": "uint64"
+          "type": "asset"
         },
         {
           "name": "execution_status",
