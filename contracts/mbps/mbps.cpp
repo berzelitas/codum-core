@@ -298,44 +298,44 @@ void bond::addmilestone(
   string press_release_url,
   string epic_url
 ) {
-    // auto bond_symbol = bond.symbol;
-    // eosio_assert(bond_symbol.is_valid(), "Invalid symbol name.");
-    // eosio_assert(budget.symbol.is_valid(), "Invalid symbol name.");
-    // eosio_assert(token_budget.symbol.is_valid(), "Invalid symbol name.");
+     auto bond_symbol = bond.symbol;
+     eosio_assert(bond_symbol.is_valid(), "Invalid symbol name.");
+     eosio_assert(budget.symbol.is_valid(), "Invalid symbol name.");
+     eosio_assert(token_budget.symbol.is_valid(), "Invalid symbol name.");
 
-    // stats statstable(_self, bond_symbol.name());
-    // auto bs = statstable.find(bond_symbol.name());
+     stats statstable(_self, bond_symbol.name());
+     auto bs = statstable.find(bond_symbol.name());
 
-    // eosio_assert(bs != statstable.end(), "Non-existed stats for bond.");
-    // require_auth(bs.token_contract);
+     eosio_assert(bs != statstable.end(), "Non-existed stats for bond.");
+     require_auth(bs->token_contract);
 
-    // eosio_assert(deadline > bs.start && deadline < bs.end, "The deadline must be between of start and end.");
+     eosio_assert(deadline > bs->start && deadline < bs->end, "The deadline must be between of start and end.");
 
-    // eosio_assert(strlen(milestone) >= 16, "The milestone length must be at least 16 characters.");
+     eosio_assert(milestone.length() >= 16, "The milestone length must be at least 16 characters.");
 
-    // eosio_assert(bond.quantity == 0, "Bond quantity must be equal to 0.");
+     eosio_assert(bond.amount == 0, "Bond quantity must be equal to 0.");
 
-    // eosio_assert(weight <= 1000000, "Total weight of all bond.symbol related milestones must not exceed 1000000.");
+     eosio_assert(weight <= 1000000, "Total weight of all bond.symbol related milestones must not exceed 1000000.");
 
-    // accounts from_budget_acnts(bs.budget_contract, _self);
-    // const auto &budget_acc = from_budget_acnts.get(budget.symbol.name());
-    // eosio_assert(budget_acc.balance >= 0, "Budget must be a valid asset symbol with 0 or positive quantity.");
+     account_index from_budget_acnts(bs->budget_contract, _self);
+     const auto &budget_acc = from_budget_acnts.get(budget.symbol.name());
+     eosio_assert(budget_acc.balance.amount >= 0, "Budget must be a valid asset symbol with 0 or positive quantity.");
 
-    // accounts from_token_acnts(bs.token_contract, _self);
-    // const auto &token_acc = from_token_acnts.get(token_budget.symbol.name());
-    // eosio_assert(token_acc.balance >= 0, "Token budget must be a valid asset symbol with 0 or positive quantity.");
+     account_index from_token_acnts(bs->token_contract, _self);
+     const auto &token_acc = from_token_acnts.get(token_budget.symbol.name());
+     eosio_assert(token_acc.balance.amount >= 0, "Token budget must be a valid asset symbol with 0 or positive quantity.");
 
-    // schedules schedulable(_self, bond.symbol.name());
-    // schedulable.emplace(_self, [&](auto &s) {
-    //     s.id = schedulable.available_primary_key();
-    //     s.bond = bond;
-    //     s.weight = weight;
-    //     s.deadline = deadline;
-    //     s.budget = budget;
-    //     s.token_budget = token_budget;
-    //     s.funding_status = 0;
-    //     s.execution_status = 0;
-    // });
+     schedule_index schedulable(_self, bond.symbol.name());
+     schedulable.emplace(_self, [&](auto &s) {
+         s.id = schedulable.available_primary_key();
+         s.bond = bond;
+         s.weight = weight;
+         s.deadline = deadline;
+         s.budget = budget;
+         s.token_budget = token_budget;
+         s.funding_status = 0;
+         s.execution_status = 0;
+     });
 }
 
 void bond::updatemilest(
