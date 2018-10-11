@@ -72,7 +72,6 @@ public:
     uint32_t weight,
     time deadline,
     uint64_t budget,
-    uint64_t token_budget,
     uint8_t execution_status,
     string update_message,
     string press_release_url
