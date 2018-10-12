@@ -1,0 +1,492 @@
+{
+  "____comment": "add and fix token, schedule and milestoneclaims tables",
+  "version": "eosio::abi/1.0",
+  "types": [
+    {
+      "new_type_name": "time",
+      "type": "uint32"
+    },
+    {
+      "new_type_name": "account_name",
+      "type": "name"
+    },
+    {
+      "new_type_name": "id_type",
+      "type": "uint64"
+    },
+    {
+      "new_type_name": "uri_type",
+      "type": "string"
+    }
+  ],
+  "structs": [
+    {
+      "name": "account",
+      "base": "",
+      "fields": [
+        {
+          "name": "balance",
+          "type": "asset"
+        }
+      ]
+    },
+    {
+      "name": "stat",
+      "base": "",
+      "fields": [
+        {
+          "name": "supply",
+          "type": "asset"
+        },
+        {
+          "name": "max_supply",
+          "type": "asset"
+        },
+        {
+          "name": "issuer",
+          "type": "account_name"
+        },
+        {
+          "name": "project",
+          "type": "string"
+        },
+        {
+          "name": "token_price",
+          "type": "asset"
+        },
+        {
+          "name": "budget_contract",
+          "type": "account_name"
+        },
+        {
+          "name": "token_budget",
+          "type": "asset"
+        },
+        {
+          "name": "tokens_in_bond",
+          "type": "asset"
+        },
+        {
+          "name": "token_contract",
+          "type": "account_name"
+        },
+        {
+          "name": "start",
+          "type": "time"
+        },
+        {
+          "name": "fundraising_end",
+          "type": "time"
+        },
+        {
+          "name": "project",
+          "type": "time"
+        }
+      ]
+    },
+    {
+      "name": "token",
+      "base": "",
+      "fields": [
+        {
+          "name": "id",
+          "type": "id_type"
+        },
+        {
+          "name": "owner",
+          "type": "account_name"
+        },
+        {
+          "name": "value",
+          "type": "asset"
+        },
+        {
+          "name": "name",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "schedule",
+      "base": "",
+      "field": [
+        {
+          "name": "id",
+          "type": "id_type"
+        },
+        {
+          "name": "bond",
+          "type": "asset"
+        },
+        {
+          "name": "weight",
+          "type": "uint32"
+        },
+        {
+          "name": "deadline",
+          "type": "time"
+        },
+        {
+          "name": "budget",
+          "type": "asset"
+        },
+        {
+          "name": "token_budget",
+          "type": "asset"
+        },
+        {
+          "name": "funding_status",
+          "type": "uint8"
+        },
+        {
+          "name": "execution_status",
+          "type": "uint8"
+        }
+      ]
+    },
+    {
+      "name": "milestoneclaims",
+      "base": "",
+      "field": [
+        {
+          "name": "id",
+          "type": "id_type"
+        },
+        {
+          "name": "token_id",
+          "type": "id_type"
+        },
+        {
+          "name": "milestone_id",
+          "type": "id_type"
+        }
+      ]
+    },
+    {
+      "name": "create",
+      "base": "",
+      "fields": [
+        {
+          "name": "issuer",
+          "type": "account_name"
+        },
+        {
+          "name": "maximum_supply",
+          "type": "asset"
+        }
+      ]
+    },
+    {
+      "name": "setupbond",
+      "base": "",
+      "fields": [
+        {
+          "name": "bond",
+          "type": "asset"
+        },
+        {
+          "name": "project",
+          "type": "string"
+        },
+        {
+          "name": "token_price",
+          "type": "asset"
+        },
+        {
+          "name": "budget_contract",
+          "type": "account_name"
+        },
+        {
+          "name": "token_budget",
+          "type": "asset"
+        },
+        {
+          "name": "tokens_in_bond",
+          "type": "asset"
+        },
+        {
+          "name": "token_contract",
+          "type": "account_name"
+        },
+        {
+          "name": "start",
+          "type": "time"
+        },
+        {
+          "name": "fundraising_end",
+          "type": "time"
+        },
+        {
+          "name": "project",
+          "type": "time"
+        }
+      ]
+    },
+    {
+      "name": "issue",
+      "base": "",
+      "fields": [
+        {
+          "name": "to",
+          "type": "account_name"
+        },
+        {
+          "name": "quantity",
+          "type": "asset"
+        },
+        {
+          "name": "name",
+          "type": "string"
+        },
+        {
+          "name": "memo",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "distrtokens",
+      "base": "",
+      "fields": [
+        {
+          "name": "token_id",
+          "type": "id_type"
+        }
+      ]
+    },
+    {
+      "name": "transferid",
+      "base": "",
+      "fields": [
+        {
+          "name": "from",
+          "type": "account_name"
+        },
+        {
+          "name": "to",
+          "type": "account_name"
+        },
+        {
+          "name": "id",
+          "type": "id_type"
+        },
+        {
+          "name": "memo",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "transfer",
+      "base": "",
+      "fields": [
+        {
+          "name": "from",
+          "type": "account_name"
+        },
+        {
+          "name": "to",
+          "type": "account_name"
+        },
+        {
+          "name": "quantity",
+          "type": "asset"
+        },
+        {
+          "name": "memo",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "burn",
+      "base": "",
+      "fields": [
+        {
+          "name": "owner",
+          "type": "name"
+        },
+        {
+          "name": "token_id",
+          "type": "id_type"
+        }
+      ]
+    },
+    {
+      "name": "setrampayer",
+      "base": "",
+      "fields": [
+        {
+          "name": "payer",
+          "type": "account_name"
+        },
+        {
+          "name": "id",
+          "type": "id_type"
+        }
+      ]
+    },
+    {
+      "name": "addmilestone",
+      "base": "",
+      "fields": [
+        {
+          "name": "bond",
+          "type": "asset"
+        },
+        {
+          "name": "weight",
+          "type": "uint32"
+        },
+        {
+          "name": "deadline",
+          "type": "time"
+        },
+        {
+          "name": "budget",
+          "type": "asset"
+        },
+        {
+          "name": "token_budget",
+          "type": "asset"
+        },
+        {
+          "name": "milestone",
+          "type": "string"
+        },
+        {
+          "name": "press_release_url",
+          "type": "string"
+        },
+        {
+          "name": "epic_url",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "updatemilest",
+      "base": "",
+      "fields": [
+        {
+          "name": "id",
+          "type": "uint64"
+        },
+        {
+          "name": "weight",
+          "type": "uint32"
+        },
+        {
+          "name": "deadline",
+          "type": "time"
+        },
+        {
+          "name": "budget",
+          "type": "asset"
+        },
+        {
+          "name": "execution_status",
+          "type": "uint8"
+        },
+        {
+          "name": "update_message",
+          "type": "string"
+        },
+        {
+          "name": "press_release_url",
+          "type": "string"
+        }
+      ]
+    }
+  ],
+  "actions": [
+    {
+      "name": "setupbond",
+      "type": "setupbond",
+      "ricardian_contract": ""
+    },
+    {
+      "name": "create",
+      "type": "create",
+      "ricardian_contract": ""
+    }
+    {
+      "name": "issue",
+      "type": "issue",
+      "ricardian_contract": ""
+    },
+    {
+      "name": "distrtokens",
+      "type": "distrtokens",
+      "ricardian_contract": ""
+    },
+    {
+      "name": "transfer",
+      "type": "transfer",
+      "ricardian_contract": ""
+    },
+    {
+      "name": "transferid",
+      "type": "transferid",
+      "ricardian_contract": ""
+    },
+    {
+      "name": "burn",
+      "type": "burn",
+      "ricardian_contract": ""
+    },
+    {
+      "name": "setrampayer",
+      "type": "setrampayer",
+      "ricardian_contract": ""
+    },
+    {
+      "name": "addmilestone",
+      "type": "addmilestone",
+      "ricardian_contract": ""
+    },
+    {
+      "name": "updatemilest",
+      "type": "updatemilest",
+      "ricardian_contract": ""
+    }
+  ],
+  "tables": [
+    {
+      "name": "accounts",
+      "index_type": "i64",
+      "key_names": [
+        "balance"
+      ],
+      "key_types": [
+        "asset"
+      ],
+      "type": "account"
+    },
+    {
+      "name": "stat",
+      "index_type": "i64",
+      "key_names": [
+        "supply"
+      ],
+      "key_types": [
+        "asset"
+      ],
+      "type": "stat"
+    },
+    {
+      "name": "token",
+      "index_type": "i64",
+      "key_names": [
+        "id"
+      ],
+      "key_types": [
+        "uint64"
+      ],
+      "type": "token"
+    }
+  ],
+  "ricardian_clauses": [],
+  "error_messages": [],
+  "abi_extensions": []
+}
