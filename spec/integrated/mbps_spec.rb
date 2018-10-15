@@ -60,8 +60,8 @@ RSpec.describe 'Bond contract' do
       expect(result.stdout).to eq ''
       expect(result.stderr).to match /token with symbol does not exist. create token before issue/
     end
-    it '3.3 issue 100.00 FOO to bar' do
-      push_action( "issue", ["bar", "100.00 FOO", "test", "issued 100 FOO"], 'foo' )
+    it '3.3 issue 5.00 FOO to bar' do
+      push_action( "issue", ["bar", "5.00 FOO", "test", "issued 5 FOO"], 'foo' )
 
       # checking accounts table
       result = get_table( "test", "bar", "accounts" )
@@ -70,7 +70,7 @@ RSpec.describe 'Bond contract' do
       expect(output['rows']).to be_a(Array)
       expect(output['rows'].first).to include (
         {
-          "balance"=> "100 FOO"
+          "balance"=> "5 FOO"
         })
 
       # checking stat table
@@ -80,8 +80,8 @@ RSpec.describe 'Bond contract' do
       expect(output['rows']).to be_a(Array)
       expect(output['rows'].first).to include (
         {
-          "supply"=> "100 FOO",
-          "max_supply"=> "1000 FOO",
+          "supply"=> "5 FOO",
+          "max_supply"=> "5 FOO",
           "issuer"=> "foo",
           "project"=> "",
           "token_price"=> "0 FOO",
