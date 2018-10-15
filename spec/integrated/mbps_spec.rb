@@ -15,7 +15,7 @@ RSpec.describe 'Bond contract' do
       expect(result.stderr).to match /maximum supply must be a whole number/
     end
     it '1.3 token with symbol FOO was created succesful' do
-      push_action( "create", ["foo", "1000.00 FOO"], 'test' )
+      peremennaya1 = push_action( "create", ["foo", "1000.00 FOO"], 'test' )
       result = get_table( "test", "FOO", "stat" )
       
       expect(result.stderr).to eq ''
