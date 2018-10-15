@@ -60,8 +60,8 @@ RSpec.describe 'Bond contract' do
       expect(result.stdout).to eq ''
       expect(result.stderr).to match /token with symbol does not exist. create token before issue/
     end
-    it '3.3 issue 5.00 FOO to bar' do
-      push_action( "issue", ["bar", "5.00 FOO", "test", "issued 5 FOO"], 'foo' )
+    it '3.3 issue 100.00 FOO to bar' do
+      push_action( "issue", ["bar", "100.00 FOO", "test", "issued 100 FOO"], 'foo' )
 
       # checking accounts table
       result = get_table( "test", "bar", "accounts" )
@@ -70,42 +70,8 @@ RSpec.describe 'Bond contract' do
       expect(output['rows']).to be_a(Array)
       expect(output['rows'].first).to include (
         {
-          "balance"=> "5 FOO"
+          "balance"=> "100 FOO"
         })
-
-      # # Need debbuging
-      # # checing token table
-      # result = get_table( "test", "test", "token" )
-      # expect(result.stderr).to eq ''
-      # output = JSON.parse result.stdout
-      # expect(output['rows']).to be_a(Array)
-      # expect(output['rows']).to include (
-      #   [{
-      #     "id"=> 0,
-      #     "owner"=> "bar",
-      #     "value"=> "1 FOO",
-      #     "name"=> "test"
-      #   },{
-      #     "id"=> 1,
-      #     "owner"=> "bar",
-      #     "value"=> "1 FOO",
-      #     "name"=> "test"
-      #   },{
-      #     "id"=> 2,
-      #     "owner"=> "bar",
-      #     "value"=> "1 FOO",
-      #     "name"=> "test"
-      #   },{
-      #     "id"=> 3,
-      #     "owner"=> "bar",
-      #     "value"=> "1 FOO",
-      #     "name"=> "test"
-      #   },{
-      #     "id"=> 4,
-      #     "owner"=> "bar",
-      #     "value"=> "1 FOO",
-      #     "name"=> "test"
-      #   }])
 
       # checking stat table
       result = get_table( "test", "FOO", "stat" )
@@ -114,7 +80,7 @@ RSpec.describe 'Bond contract' do
       expect(output['rows']).to be_a(Array)
       expect(output['rows'].first).to include (
         {
-          "supply"=> "5 FOO",
+          "supply"=> "100 FOO",
           "max_supply"=> "1000 FOO",
           "issuer"=> "foo",
           "project"=> "",
@@ -189,34 +155,6 @@ RSpec.describe 'Bond contract' do
         {
           "balance"=> "3 FOO"
         })
-        
-        # # Need debbuging
-        # result = get_table( "test", "bar", "accounts" )
-        # expect(result.stderr).to eq ''
-        # output = JSON.parse result.stdout
-        # expect(output['rows']).to be_a(Array)
-        # expect(output['rows'].first).to include (
-        #   {
-        #     "id": 0,
-        #     "owner": "bar",
-        #     "value": "1 FOO",
-        #     "name": "test"
-        #   },{
-        #     "id": 2,
-        #     "owner": "bar",
-        #     "value": "1 FOO",
-        #     "name": "test"
-        #   },{
-        #     "id": 3,
-        #     "owner": "bar",
-        #     "value": "1 FOO",
-        #     "name": "test"
-        #   },{
-        #     "id": 4,
-        #     "owner": "bar",
-        #     "value": "1 FOO",
-        #     "name": "test"
-        #   })
     end
   end
 end

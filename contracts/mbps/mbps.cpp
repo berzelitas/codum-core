@@ -124,6 +124,7 @@ void bond::issue(account_name to, asset quantity, string name, string memo) {
     add_supply(quantity);
 
     // Mint nfts
+    eosio::print("amount = ", quantity.amount);
     for (uint8_t i = 0; i < quantity.amount; i++) {
         mint(to, st.issuer, asset{1, symbol}, name);
     }
