@@ -60,8 +60,8 @@ RSpec.describe 'Bond contract' do
       expect(result.stdout).to eq ''
       expect(result.stderr).to match /token with symbol does not exist. create token before issue/
     end
-    it '3.3 issue 3.00 FOO to bar' do
-      push_action( "issue", ["bar", "3.00 FOO", "test", "issued 3 FOO"], 'foo' )
+    it '3.3 issue 5.00 FOO to bar' do
+      push_action( "issue", ["bar", "5.00 FOO", "test", "issued 5 FOO"], 'foo' )
 
       # checking accounts table
       result = get_table( "test", "bar", "accounts" )
@@ -70,7 +70,7 @@ RSpec.describe 'Bond contract' do
       expect(output['rows']).to be_a(Array)
       expect(output['rows'].first).to include (
         {
-          "balance"=> "3 FOO"
+          "balance"=> "5 FOO"
         })
 
       # # Need debbuging
@@ -95,6 +95,16 @@ RSpec.describe 'Bond contract' do
       #     "owner"=> "bar",
       #     "value"=> "1 FOO",
       #     "name"=> "test"
+      #   },{
+      #     "id"=> 3,
+      #     "owner"=> "bar",
+      #     "value"=> "1 FOO",
+      #     "name"=> "test"
+      #   },{
+      #     "id"=> 4,
+      #     "owner"=> "bar",
+      #     "value"=> "1 FOO",
+      #     "name"=> "test"
       #   }])
 
       # checking stat table
@@ -104,7 +114,7 @@ RSpec.describe 'Bond contract' do
       expect(output['rows']).to be_a(Array)
       expect(output['rows'].first).to include (
         {
-          "supply"=> "3 FOO",
+          "supply"=> "5 FOO",
           "max_supply"=> "1000 FOO",
           "issuer"=> "foo",
           "project"=> "",
@@ -132,11 +142,81 @@ RSpec.describe 'Bond contract' do
       expect(result.stdout).to eq ''
       expect(result.stderr).to match /quantity must be a whole number/
     end
-    it '4.2 throws assert(cannot transfer quantity, not equal to 1)' do
+    it '4.3 throws assert(cannot transfer quantity, not equal to 1)' do
       result = push_action( "transfer", ["bar", "foo", "2.00 FOO", "transfered 2 FOO"], 'bar' )
 
       expect(result.stdout).to eq ''
       expect(result.stderr).to match /cannot transfer quantity, not equal to 1/
+    end
+    it '4.4 throws assert(token is not found or is not owned by account)' do
+      result = push_action( "transfer", ["bar", "foo", "1.00 FOOBAR", "transfered 1 FOO"], 'bar' )
+
+      expect(result.stdout).to eq ''
+      expect(result.stderr).to match /token is not found or is not owned by account/
+    end
+    it '4.5 transfer 1 FOO from bar to baz' do
+      result = push_action( "transfer", ["bar", "baz", "1.00 FOO", "transfered 1 FOO from bar to baz"], 'bar' )
+
+      result = get_table( "test", "bar", "accounts" )
+      expect(result.stderr).to eq ''
+      output = JSON.parse result.stdout
+      expect(output['rows']).to be_a(Array)
+      expect(output['rows'].first).to include (
+        {
+          "balance"=> "4 FOO"
+        })
+
+      result = get_table( "test", "baz", "accounts" )
+      expect(result.stderr).to eq ''
+      output = JSON.parse result.stdout
+      expect(output['rows']).to be_a(Array)
+      expect(output['rows'].first).to include (
+        {
+          "balance"=> "1 FOO"
+        })
+    end
+  end
+  describe '#burn' do
+    # already tested in eosio.nft but nedd to test integration in MBPS
+    it '5.1 burn 1 FOO from bar account' do
+      result = push_action( "burn", ["bar", "1"], 'bar' )
+
+      result = get_table( "test", "bar", "accounts" )
+      expect(result.stderr).to eq ''
+      output = JSON.parse result.stdout
+      expect(output['rows']).to be_a(Array)
+      expect(output['rows'].first).to include (
+        {
+          "balance"=> "3 FOO"
+        })
+        
+        # # Need debbuging
+        # result = get_table( "test", "bar", "accounts" )
+        # expect(result.stderr).to eq ''
+        # output = JSON.parse result.stdout
+        # expect(output['rows']).to be_a(Array)
+        # expect(output['rows'].first).to include (
+        #   {
+        #     "id": 0,
+        #     "owner": "bar",
+        #     "value": "1 FOO",
+        #     "name": "test"
+        #   },{
+        #     "id": 2,
+        #     "owner": "bar",
+        #     "value": "1 FOO",
+        #     "name": "test"
+        #   },{
+        #     "id": 3,
+        #     "owner": "bar",
+        #     "value": "1 FOO",
+        #     "name": "test"
+        #   },{
+        #     "id": 4,
+        #     "owner": "bar",
+        #     "value": "1 FOO",
+        #     "name": "test"
+        #   })
     end
   end
 end
